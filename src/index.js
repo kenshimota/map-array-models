@@ -7,7 +7,12 @@ const MapModels = (data) => ({
   /**
    * created a map from array because the key is faster than loop inside array
    */
-  data: new Map(data.map((current) => [current.id, current])),
+  data: new Map(
+    data.map((current) => [
+      current.id,
+      { createdAt: new Date(), updatedAt: new Date(), ...current },
+    ])
+  ),
 
   /**
    * get a record it cost will be O(1), on the other hand very fast
@@ -48,7 +53,12 @@ const MapModels = (data) => ({
    */
   insert: function (data) {
     const newId = (this.maxId || 0) + 1;
-    const values = { id: newId, ...data };
+    const values = {
+      id: newId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...data,
+    };
 
     if (this.data.has(values.id)) {
       throw new Error(`id(${values.id}) already exists`);
@@ -77,7 +87,7 @@ const MapModels = (data) => ({
 
     if (fromId && record) {
       counted++;
-      const newRecord = { ...record, ...set };
+      const newRecord = { ...record, updatedAt: new Date(), ...set };
       this._checkNotRepeatId(newRecord.id, record);
       this.data.set(fromId, newRecord);
       return counted;
@@ -112,5 +122,3 @@ const MapModels = (data) => ({
     return true;
   },
 });
-
-module.exports = MapModels;
